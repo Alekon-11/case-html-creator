@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Генератор HTML-страниц · Кейс</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar__brand">
+      <span class="topbar__logo">HTML<b>Builder</b></span>
+      <span class="topbar__sub">Генератор страниц-кейсов по макету</span>
+    </div>
+    <div class="topbar__actions">
+      <button id="btnPreview" class="btn btn--ghost" type="button">Обновить превью</button>
+      <button id="btnDownload" class="btn btn--primary" type="button">Скачать HTML</button>
+    </div>
+  </header>
+
+  <main class="layout">
+    <!-- Панель настроек -->
+    <section class="panel" aria-label="Настройки страницы">
+      <div class="panel__scroll">
+
+        <!-- Палитра -->
+        <fieldset class="card colors-card">
+          <legend class="card__title">Палитра</legend>
+          <p class="card__hint">2 контрастных и 3 акцентных цвета. Применяются ко всей странице.</p>
+          <div id="colorsGrid" class="colors-grid"></div>
+        </fieldset>
+
+        <p class="tip">💡 В любом текстовом поле выделите фрагмент звёздочками <code>**вот так**</code>, чтобы сделать его <b>жирным</b>.</p>
+
+        <!-- Блоки рендерятся сюда -->
+        <div id="blocksRoot"></div>
+
+      </div>
+    </section>
+
+    <!-- Превью -->
+    <section class="preview" aria-label="Превью страницы">
+      <div class="preview__bar">
+        <div class="preview__dots"><span></span><span></span><span></span></div>
+        <span class="preview__label">Превью сгенерированной страницы</span>
+        <select id="previewWidth" class="preview__select" title="Ширина превью">
+          <option value="100%">Десктоп</option>
+          <option value="768px">Планшет</option>
+          <option value="390px">Телефон</option>
+        </select>
+      </div>
+      <div class="preview__frame-wrap">
+        <iframe id="previewFrame" class="preview__frame" title="Превью"></iframe>
+      </div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
