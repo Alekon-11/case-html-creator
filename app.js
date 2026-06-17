@@ -231,7 +231,7 @@ const state = { colors: {}, blocks: {} };
 function buildDefaultState() {
   COLORS.forEach(c => state.colors[c.key] = c.value);
   SCHEMA.forEach(block => {
-    const b = { enabled: block.enabled };
+    const b = { enabled: block.enabled, name: block.name };
     block.fields.forEach(f => {
       b[f.key] = deepDefault(f);
     });
@@ -313,12 +313,23 @@ function renderBlocks() {
     const body = el('div', { class: 'card__body' });
     block.fields.forEach(f => body.append(renderField(block.id, f)));
 
+    const nameInput = el('input', {
+      type: 'text', class: 'card__name', value: data.name,
+      title: 'Нажмите, чтобы переименовать блок',
+      onclick: e => e.stopPropagation(),
+      onkeydown: e => { if (e.key === 'Enter') e.target.blur(); },
+      oninput: e => { data.name = e.target.value; },
+    });
+
     const head = el('div', { class: 'card__head' }, [
       toggle,
-      el('span', { class: 'card__name' }, [block.name]),
+      nameInput,
       el('span', { class: 'card__chev', html: '&#9662;' }),
     ]);
-    head.addEventListener('click', () => card.classList.toggle('is-collapsed'));
+    head.addEventListener('click', e => {
+      if (e.target === nameInput) return;
+      card.classList.toggle('is-collapsed');
+    });
 
     const card = el('fieldset', { class: 'card' + (data.enabled ? '' : ' is-off') }, [head, body]);
     blocksRoot.append(card);
