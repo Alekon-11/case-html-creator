@@ -63,15 +63,14 @@ HTML-файл — такой же, как из визуального генер
 Положи картинки в одну папку, запусти команду в ней — получишь файл `images-base64.txt`,
 откуда нужные строки копируешь прямо в чат (в поля `image` / `images`).
 
-**Windows (PowerShell):**
+**Windows (PowerShell):** (фильтр через Where-Object — у `-Include` без маски в пути есть ловушка)
 ```powershell
-Get-ChildItem -File -Include *.jpg,*.jpeg,*.png,*.webp,*.svg -Recurse:$false | ForEach-Object {
-  $mime = switch ($_.Extension.ToLower()) {
-    '.png'  { 'image/png' } '.webp' { 'image/webp' } '.svg' { 'image/svg+xml' } default { 'image/jpeg' }
-  }
-  $b64 = [Convert]::ToBase64String([IO.File]::ReadAllBytes($_.FullName))
-  "$($_.Name): data:$mime;base64,$b64"
-} | Set-Content images-base64.txt -Encoding utf8
+$lines = Get-ChildItem -File | Where-Object { $_.Extension -match '^\.(jpe?g|png|webp|svg)$' } | ForEach-Object {
+  $mime = switch ($_.Extension.ToLower()) { '.png'{'image/png'} '.webp'{'image/webp'} '.svg'{'image/svg+xml'} default{'image/jpeg'} }
+  "$($_.Name): data:$mime;base64,$([Convert]::ToBase64String([IO.File]::ReadAllBytes($_.FullName)))"
+}
+$lines | Set-Content images-base64.txt -Encoding utf8
+"Готово: $($lines.Count) картинок -> images-base64.txt"
 ```
 
 **macOS / Linux (bash):**
