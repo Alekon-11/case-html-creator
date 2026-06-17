@@ -58,6 +58,37 @@ HTML-файл — такой же, как из визуального генер
 > Самый удобный способ со множеством картинок — собрать текст промптом, а изображения
 > добавить во **визуальном генераторе** (`index.html`): drag&drop там сам кодирует их в base64.
 
+### Быстро: папка картинок → готовые строки `имя: data:…base64…`
+
+Положи картинки в одну папку, запусти команду в ней — получишь файл `images-base64.txt`,
+откуда нужные строки копируешь прямо в чат (в поля `image` / `images`).
+
+**Windows (PowerShell):**
+```powershell
+Get-ChildItem -File -Include *.jpg,*.jpeg,*.png,*.webp,*.svg -Recurse:$false | ForEach-Object {
+  $mime = switch ($_.Extension.ToLower()) {
+    '.png'  { 'image/png' } '.webp' { 'image/webp' } '.svg' { 'image/svg+xml' } default { 'image/jpeg' }
+  }
+  $b64 = [Convert]::ToBase64String([IO.File]::ReadAllBytes($_.FullName))
+  "$($_.Name): data:$mime;base64,$b64"
+} | Set-Content images-base64.txt -Encoding utf8
+```
+
+**macOS / Linux (bash):**
+```bash
+for f in *.jpg *.jpeg *.png *.webp *.svg; do
+  [ -e "$f" ] || continue
+  case "$f" in *.png) m=image/png;; *.webp) m=image/webp;; *.svg) m=image/svg+xml;; *) m=image/jpeg;; esac
+  printf '%s: data:%s;base64,%s\n\n' "$f" "$m" "$(base64 -w0 "$f" 2>/dev/null || base64 "$f" | tr -d '\n')"
+done > images-base64.txt
+```
+
+Пример строки на выходе (её и вставляешь в параметр):
+```
+hero.jpg: data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQ...(длинно)...
+```
+> base64-строки крупные — копируй в чат только те картинки, что реально нужны.
+
 ---
 
 ## ПАРАМЕТРЫ (редактировать под свой кейс)
