@@ -342,6 +342,9 @@ p{margin:0 0 16px;}
 .formgrid input,.formgrid textarea{font:inherit;width:100%;padding:16px 18px;border-radius:16px;
   border:1px solid rgba(20,20,20,.18);background:var(--c2);font-size:18px;}
 .formgrid textarea{min-height:110px;resize:vertical;}
+.field-wrap{display:flex;flex-direction:column;gap:6px;}
+.form-err{color:#E5484D;font-size:13px;font-weight:500;min-height:1em;}
+.formgrid .is-invalid{border-color:#E5484D;}
 .btn-accent{background:var(--a1);color:#fff;border:none;border-radius:45px;
   padding:16px 36px;font:inherit;font-size:20px;font-weight:600;cursor:pointer;transition:filter .15s ease;}
 .btn-accent:hover{filter:brightness(1.06);}
@@ -485,15 +488,15 @@ p{margin:0 0 16px;}
 </div>
 ```
 
-**form:**
+**form:** (поля Имя, Телефон, E-mail — обязательные; валидация в «Скрипте 3»)
 ```html
 <div class="formcard">
   <h2>{{title}}</h2>
   <p class="muted">{{subtitle}}</p>
-  <form class="formgrid" onsubmit="event.preventDefault();this.reset();alert('Заявка отправлена!');">
-    <input type="text" placeholder="Имя" required>
-    <input type="tel" placeholder="Телефон" required>
-    <input class="full" type="email" placeholder="E-mail">
+  <form class="formgrid" novalidate>
+    <div class="field-wrap"><input type="text" name="name" placeholder="Имя*" required><span class="form-err"></span></div>
+    <div class="field-wrap"><input type="tel" name="phone" placeholder="Телефон*" required><span class="form-err"></span></div>
+    <div class="field-wrap full"><input type="email" name="email" placeholder="E-mail*" required><span class="form-err"></span></div>
     <textarea class="full" placeholder="Комментарий"></textarea>
     <div class="full"><button class="btn-accent" type="submit">{{button}}</button></div>
   </form>
@@ -560,6 +563,40 @@ p{margin:0 0 16px;}
     window.addEventListener("resize",sync);
   }
   document.querySelectorAll(".cases").forEach(setup);
+})();
+</script>
+```
+
+### Скрипт 3 — валидация формы (вставить перед `</body>`, если блок form включён)
+Поля Имя, Телефон, E-mail — обязательные. Телефон считается верным при ≥7 цифрах,
+e-mail — по простому regex. Ошибки показываются под полем, отправка блокируется.
+```html
+<script>
+(function(){
+  var reEmail=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  function setErr(input,msg){
+    var box=input.closest(".field-wrap"); if(!box) return;
+    var e=box.querySelector(".form-err"); if(e) e.textContent=msg||"";
+    input.classList.toggle("is-invalid",!!msg);
+  }
+  function digits(v){ return (v.match(/\d/g)||[]).length; }
+  document.querySelectorAll(".formgrid").forEach(function(form){
+    var name=form.querySelector("[name=name]");
+    var phone=form.querySelector("[name=phone]");
+    var email=form.querySelector("[name=email]");
+    function check(){
+      var ok=true;
+      if(name){ if(!name.value.trim()){setErr(name,"Укажите имя");ok=false;} else setErr(name,""); }
+      if(phone){ if(digits(phone.value)<7){setErr(phone,"Укажите корректный телефон");ok=false;} else setErr(phone,""); }
+      if(email){ if(!reEmail.test(email.value.trim())){setErr(email,"Укажите корректный e-mail");ok=false;} else setErr(email,""); }
+      return ok;
+    }
+    form.addEventListener("submit",function(e){
+      e.preventDefault();
+      if(check()){ form.reset(); alert("Заявка отправлена!"); }
+    });
+    [name,phone,email].forEach(function(i){ if(i) i.addEventListener("input",function(){ setErr(i,""); }); });
+  });
 })();
 </script>
 ```
