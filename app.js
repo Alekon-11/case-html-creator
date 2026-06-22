@@ -1023,6 +1023,26 @@ document.getElementById('btnPdf').addEventListener('click', () => {
   });
 });
 
+/* Выпадающее меню действий (мобильные) */
+const menuToggle = document.getElementById('menuToggle');
+const topbarActions = document.getElementById('topbarActions');
+if (menuToggle && topbarActions) {
+  menuToggle.addEventListener('click', e => {
+    e.stopPropagation();
+    const open = topbarActions.classList.toggle('is-open');
+    menuToggle.setAttribute('aria-expanded', String(open));
+  });
+  // закрыть по клику вне и по выбору действия
+  document.addEventListener('click', () => {
+    topbarActions.classList.remove('is-open');
+    menuToggle.setAttribute('aria-expanded', 'false');
+  });
+  topbarActions.addEventListener('click', () => {
+    topbarActions.classList.remove('is-open');
+    menuToggle.setAttribute('aria-expanded', 'false');
+  });
+}
+
 /* ---------- Инициализация ---------- */
 buildDefaultState();
 renderColors();

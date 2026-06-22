@@ -14,10 +14,13 @@
       <span class="topbar__logo">HTML<b>Builder</b></span>
       <span class="topbar__sub">Генератор страниц-кейсов по макету</span>
     </div>
-    <div class="topbar__actions">
-      <button id="btnPreview" class="btn btn--ghost" type="button">Обновить превью</button>
-      <button id="btnPdf" class="btn btn--ghost" type="button">Скачать PDF</button>
-      <button id="btnDownload" class="btn btn--primary" type="button">Скачать HTML</button>
+    <div class="topbar__actions-wrap">
+      <button id="menuToggle" class="topbar__menu" type="button" aria-label="Меню" aria-expanded="false" aria-controls="topbarActions">⋯</button>
+      <div class="topbar__actions" id="topbarActions">
+        <button id="btnPreview" class="btn btn--ghost" type="button">Обновить превью</button>
+        <button id="btnPdf" class="btn btn--ghost" type="button">Скачать PDF</button>
+        <button id="btnDownload" class="btn btn--primary" type="button">Скачать HTML</button>
+      </div>
     </div>
   </header>
 
