@@ -502,7 +502,7 @@ function generatedCSS() {
   --maxw:1000px;
 }
 *{box-sizing:border-box;}
-html{scroll-behavior:smooth;}
+html{scroll-behavior:smooth;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
 body{margin:0;font-family:'Gilroy','Manrope',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
   background:var(--c2);color:var(--c1);line-height:1.45;-webkit-font-smoothing:antialiased;}
 img{max-width:100%;display:block;}
@@ -650,6 +650,20 @@ p{margin:0 0 16px;}
   .cases__arrow{width:42px;height:42px;}
   .case__btn{font-size:16px;}
 }
+
+/* печать / PDF */
+@media print{
+  body{background:#fff;}
+  .reveal{opacity:1 !important;transform:none !important;}
+  .hero{min-height:auto;}
+  .section{padding:24px 0;}
+  .cases__nav{display:none !important;}
+  .cases-track{overflow:visible !important;flex-wrap:wrap;}
+  .case{flex:0 0 calc((100% - 20px)/2) !important;box-shadow:none !important;}
+  .section,.case,.metric,.quote,.formcard,.highlight,.grid-img img{break-inside:avoid;}
+  h1,h2,h3{break-after:avoid;}
+}
+@page{margin:14mm;}
 `;
 }
 
@@ -983,6 +997,30 @@ document.getElementById('btnDownload').addEventListener('click', () => {
   a.click();
   a.remove();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
+});
+
+/* Печать -> «Сохранить как PDF» (через скрытый iframe, без внешних библиотек) */
+document.getElementById('btnPdf').addEventListener('click', () => {
+  const iframe = document.createElement('iframe');
+  iframe.style.cssText = 'position:fixed;right:0;bottom:0;width:0;height:0;border:0;visibility:hidden;';
+  document.body.append(iframe);
+  iframe.srcdoc = generateHTML();
+  iframe.addEventListener('load', () => {
+    // даём подгрузиться шрифтам и отрисоваться base64-картинкам
+    setTimeout(() => {
+      const w = iframe.contentWindow;
+      try {
+        w.focus();
+        w.onafterprint = () => iframe.remove();
+        w.print();
+      } catch (e) {
+        iframe.remove();
+        alert('Не удалось открыть печать. Откройте скачанный HTML и нажмите Ctrl+P → «Сохранить как PDF».');
+      }
+      // подстраховка, если onafterprint не сработал
+      setTimeout(() => { if (document.body.contains(iframe)) iframe.remove(); }, 60000);
+    }, 500);
+  });
 });
 
 /* ---------- Инициализация ---------- */

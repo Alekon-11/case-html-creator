@@ -270,7 +270,7 @@ cards:
   --maxw:1000px;
 }
 *{box-sizing:border-box;}
-html{scroll-behavior:smooth;}
+html{scroll-behavior:smooth;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
 body{margin:0;font-family:'Gilroy','Manrope',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
   background:var(--c2);color:var(--c1);line-height:1.45;-webkit-font-smoothing:antialiased;}
 img{max-width:100%;display:block;}
@@ -394,7 +394,25 @@ p{margin:0 0 16px;}
   .cases__arrow{width:42px;height:42px;}
   .case__btn{font-size:16px;}
 }
+
+/* печать / PDF (Ctrl+P -> Сохранить как PDF) */
+@media print{
+  body{background:#fff;}
+  .reveal{opacity:1 !important;transform:none !important;}
+  .hero{min-height:auto;}
+  .section{padding:24px 0;}
+  .cases__nav{display:none !important;}
+  .cases-track{overflow:visible !important;flex-wrap:wrap;}
+  .case{flex:0 0 calc((100% - 20px)/2) !important;box-shadow:none !important;}
+  .section,.case,.metric,.quote,.formcard,.highlight,.grid-img img{break-inside:avoid;}
+  h1,h2,h3{break-after:avoid;}
+}
+@page{margin:14mm;}
 ```
+
+> **PDF:** отдельный формат не нужен — страница печатается в PDF средствами браузера
+> (`Ctrl+P` → «Сохранить как PDF»). Print-стили выше делают анимационные блоки видимыми,
+> разворачивают слайдер кейсов и сохраняют цвета. Получается векторный PDF с выделяемым текстом.
 
 ### HTML-шаблоны блоков (выводить только включённые, в указанном порядке)
 
